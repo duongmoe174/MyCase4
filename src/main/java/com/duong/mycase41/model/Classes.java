@@ -18,6 +18,10 @@ public class Classes {
         this.name = name;
     }
 
+    public Classes(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "Classes{" +

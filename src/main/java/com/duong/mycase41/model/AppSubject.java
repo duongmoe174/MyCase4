@@ -18,6 +18,10 @@ public class AppSubject {
         this.name = name;
     }
 
+    public AppSubject(String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
