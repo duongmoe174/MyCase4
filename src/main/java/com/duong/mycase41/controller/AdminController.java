@@ -4,6 +4,7 @@ import com.duong.mycase41.model.*;
 import com.duong.mycase41.model.DTO.formUser.MinistryForm;
 import com.duong.mycase41.model.DTO.formUser.StudentForm;
 import com.duong.mycase41.model.DTO.formUser.TeacherForm;
+import com.duong.mycase41.service.approle.IAppRoleService;
 import com.duong.mycase41.service.appuser.IAppUserService;
 import com.duong.mycase41.service.classes.ClassesService;
 import com.duong.mycase41.service.gender.IGenderService;
@@ -41,9 +42,39 @@ public class AdminController {
     @Autowired
     private IAppUserService appUserService;
 
+    @Autowired
+    private IAppRoleService appRoleService;
+
+    //-----------GENDER--------------
+    @GetMapping("/genders")
+    public ResponseEntity<Iterable<Gender>> getAllGender() {
+        return new ResponseEntity<>(genderService.findAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/genders/{id}")
+    public ResponseEntity<Gender> getGenderById (@PathVariable Long id) {
+        Optional<Gender> genderOptional = genderService.findById(id);
+        if (!genderOptional.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(genderOptional.get(), HttpStatus.OK);
+    }
+    //-----------ROLE--------------
+    @GetMapping("/roles")
+    public ResponseEntity<Iterable<AppRole>> getAllRole() {
+        return new ResponseEntity<>(appRoleService.findAll(), HttpStatus.OK);
+    }
+    @GetMapping("/roles/{id}")
+    public ResponseEntity<AppRole> getRoleById (@PathVariable Long id) {
+        Optional<AppRole> roleOptional = appRoleService.findById(id);
+        if (!roleOptional.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(roleOptional.get(), HttpStatus.OK);
+    }
     //-----------CLASSES--------------
     @GetMapping("/classes")
-    public ResponseEntity<Page<Classes>> getAllClasses(@RequestParam(name = "c") Optional<String> c, @PageableDefault(value = 3) Pageable pageable) {
+    public ResponseEntity<Page<Classes>> getAllClasses(@RequestParam(name = "c") Optional<String> c, @PageableDefault(value = 5) Pageable pageable) {
         Page<Classes> classes;
         if (!c.isPresent()) {
             classes = classesService.findAll(pageable);
@@ -54,9 +85,23 @@ public class AdminController {
 
     }
 
+    @GetMapping("/classesSelect")
+    public ResponseEntity<Iterable<Classes>> getAllSelectClass () {
+        return new ResponseEntity<>(classesService.findAll(), HttpStatus.OK);
+    }
+
     @PostMapping("/classes")
-    public ResponseEntity<Classes> createClass(@ModelAttribute Classes classes) {
+    public ResponseEntity<Classes> createClass(@RequestBody Classes classes) {
         return new ResponseEntity<>(classesService.save(classes), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/classes/{id}")
+    public ResponseEntity<Classes> getClassById (@PathVariable Long id) {
+        Optional<Classes> classesOptional = classesService.findById(id);
+        if (!classesOptional.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(classesOptional.get(), HttpStatus.OK);
     }
 
     @DeleteMapping("/classes/{id}")
@@ -70,7 +115,7 @@ public class AdminController {
     }
 
     @PostMapping("/classes/edit/{id}")
-    public ResponseEntity<Classes> editClasses(@PathVariable Long id, @ModelAttribute Classes classes) {
+    public ResponseEntity<Classes> editClasses(@PathVariable Long id, @RequestBody Classes classes) {
         Optional<Classes> classesOptional = classesService.findById(id);
         if (!classesOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -91,8 +136,17 @@ public class AdminController {
         return new ResponseEntity<>(subjectService.findAll(), HttpStatus.OK);
     }
 
+    @GetMapping("/subject/{id}")
+    public ResponseEntity<AppSubject> getSubjectById (@PathVariable Long id) {
+        Optional<AppSubject> subjectOptional = subjectService.findById(id);
+        if (!subjectOptional.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(subjectOptional.get(), HttpStatus.OK);
+    }
+
     @PostMapping("/subject")
-    public ResponseEntity<AppSubject> createSubject(@ModelAttribute AppSubject subject) {
+    public ResponseEntity<AppSubject> createSubject(@RequestBody AppSubject subject) {
         return new ResponseEntity<>(subjectService.save(subject), HttpStatus.CREATED);
     }
 
@@ -107,7 +161,7 @@ public class AdminController {
     }
 
     @PostMapping("/subject/edit/{id}")
-    public ResponseEntity<AppSubject> editSubject(@PathVariable Long id, @ModelAttribute AppSubject appSubject) {
+    public ResponseEntity<AppSubject> editSubject(@PathVariable Long id, @RequestBody AppSubject appSubject) {
         Optional<AppSubject> subjectOptional = subjectService.findById(id);
         if (!subjectOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
